@@ -752,13 +752,14 @@ final class HUDAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func hasVisibleOnScreenWindow(pid: pid_t) -> Bool {
+        let selfPID = ProcessInfo.processInfo.processIdentifier
         let options: CGWindowListOption = [.optionOnScreenOnly, .excludeDesktopElements]
         guard let list = CGWindowListCopyWindowInfo(options, kCGNullWindowID) as? [[String: Any]] else {
             return true
         }
+        var sawAnyOtherAppWindow = false
         for info in list {
             guard let ownerPID = info[kCGWindowOwnerPID as String] as? pid_t,
-                  ownerPID == pid,
                   let layer = info[kCGWindowLayer as String] as? Int,
                   layer == 0,
                   let boundsDict = info[kCGWindowBounds as String] as? [String: Any],
@@ -767,9 +768,15 @@ final class HUDAppDelegate: NSObject, NSApplicationDelegate {
                   rect.height >= 80 else {
                 continue
             }
-            return true
+            if ownerPID != selfPID {
+                sawAnyOtherAppWindow = true
+            }
+            if ownerPID == pid {
+                return true
+            }
         }
-        return false
+        // If macOS restricts window enumeration for other apps, do not falsely hide the HUD
+        return !sawAnyOtherAppWindow
     }
 
     private func syncVisibility() {
