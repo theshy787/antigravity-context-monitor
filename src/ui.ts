@@ -277,18 +277,18 @@ function render(data: MetricsPayload) {
           <div class="kpi-foot">已用 ${fmtNum(ctxUsed)} / ${fmtNum(effectiveLimit)} (${fmtPct(ctxRatio)}) · ${escapeHtml(active?.model || "-")}</div>
         </div>
 
-        <div class="card kpi" title="近 5 小时已用: ${fiveHUsed.toLocaleString()} tokens&#10;参考剩余: ${fiveHRem.toLocaleString()} tokens&#10;5 小时参考预算: ${s.fiveHourTokenBudget.toLocaleString()} tokens">
-          <div class="kpi-label">${escapeHtml(s.planName)} · 5 小时窗口剩余</div>
+        <div class="card kpi" title="近 5 小时折算消耗（新增1x+缓存0.1x+输出4x）: ${fiveHUsed.toLocaleString()}&#10;参考剩余: ${fiveHRem.toLocaleString()}&#10;5 小时参考预算: ${s.fiveHourTokenBudget.toLocaleString()}">
+          <div class="kpi-label">${escapeHtml(s.planName)} · 5h 折算剩余</div>
           <div class="kpi-val">${fiveHOver > 0 ? `超参考 +${fmtNum(fiveHOver)}` : fmtNum(fiveHRem)} <span class="kpi-sub">${fiveHOver > 0 ? "" : `剩余 (${fmtPct(1 - fiveHRatio)})`}</span></div>
           <div class="progress"><div class="progress-fill ${fiveHTone}" style="width:${Math.min(100, fiveHRatio * 100).toFixed(1)}%"></div></div>
-          <div class="kpi-foot">近 5h 已用 ${fmtNum(fiveHUsed)} / ${fmtNum(s.fiveHourTokenBudget)} · ${data.summary.fiveHourTurns} 轮</div>
+          <div class="kpi-foot">折算已用 ${fmtNum(fiveHUsed)} / ${fmtNum(s.fiveHourTokenBudget)} · 精确值见 /quota</div>
         </div>
 
-        <div class="card kpi" title="近 7 天已用: ${weekUsed.toLocaleString()} tokens&#10;参考剩余: ${weekRem.toLocaleString()} tokens&#10;7 天参考预算: ${s.weeklyTokenBudget.toLocaleString()} tokens">
-          <div class="kpi-label">${escapeHtml(s.planName)} · 7 天周额度剩余</div>
+        <div class="card kpi" title="近 7 天折算消耗（新增1x+缓存0.1x+输出4x）: ${weekUsed.toLocaleString()}&#10;参考剩余: ${weekRem.toLocaleString()}&#10;7 天参考预算: ${s.weeklyTokenBudget.toLocaleString()}">
+          <div class="kpi-label">${escapeHtml(s.planName)} · 7d 折算剩余</div>
           <div class="kpi-val">${weekOver > 0 ? `超参考 +${fmtNum(weekOver)}` : fmtNum(weekRem)} <span class="kpi-sub">${weekOver > 0 ? "" : `剩余 (${fmtPct(1 - weekRatio)})`}</span></div>
           <div class="progress"><div class="progress-fill ${weekTone}" style="width:${Math.min(100, weekRatio * 100).toFixed(1)}%"></div></div>
-          <div class="kpi-foot">近 7 天已用 ${fmtNum(weekUsed)} / ${fmtNum(s.weeklyTokenBudget)} · ${data.summary.weeklyTurns} 轮</div>
+          <div class="kpi-foot">折算已用 ${fmtNum(weekUsed)} / ${fmtNum(s.weeklyTokenBudget)} · ${data.summary.weeklyTurns} 轮</div>
         </div>
 
         <div class="card kpi">
@@ -366,15 +366,15 @@ function render(data: MetricsPayload) {
   });
   document.getElementById("preset-pro")?.addEventListener("click", () => {
     (document.getElementById("in-plan") as HTMLInputElement).value = "Google AI Pro";
-    (document.getElementById("in-ctx") as HTMLInputElement).value = "1000000";
-    (document.getElementById("in-5h") as HTMLInputElement).value = "15000000";
-    (document.getElementById("in-week") as HTMLInputElement).value = "50000000";
+    (document.getElementById("in-ctx") as HTMLInputElement).value = "0";
+    (document.getElementById("in-5h") as HTMLInputElement).value = "8000000";
+    (document.getElementById("in-week") as HTMLInputElement).value = "30000000";
   });
   document.getElementById("preset-ultra")?.addEventListener("click", () => {
     (document.getElementById("in-plan") as HTMLInputElement).value = "Google AI Ultra";
-    (document.getElementById("in-ctx") as HTMLInputElement).value = "1000000";
-    (document.getElementById("in-5h") as HTMLInputElement).value = "60000000";
-    (document.getElementById("in-week") as HTMLInputElement).value = "200000000";
+    (document.getElementById("in-ctx") as HTMLInputElement).value = "0";
+    (document.getElementById("in-5h") as HTMLInputElement).value = "32000000";
+    (document.getElementById("in-week") as HTMLInputElement).value = "120000000";
   });
   document.getElementById("btn-save-settings")?.addEventListener("click", async () => {
     const val = (id: string) => Number((document.getElementById(id) as HTMLInputElement)?.value);

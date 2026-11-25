@@ -7,8 +7,8 @@ struct MonitorSettings: Codable {
     var planName: String = "Google AI Pro"
     var googleAccount: String = ""
     var contextLimit: Double = 1_000_000
-    var fiveHourTokenBudget: Double = 15_000_000
-    var weeklyTokenBudget: Double = 50_000_000
+    var fiveHourTokenBudget: Double = 8_000_000
+    var weeklyTokenBudget: Double = 30_000_000
     var inputPricePerM: Double = 1.25
     var cachePricePerM: Double = 0.31
     var outputPricePerM: Double = 5.0
@@ -180,13 +180,14 @@ enum LocalDataReader {
                             }
                         }
 
-                        let totalTurn = totalIn + out
+                        // Weighted effective tokens: uncached*1 + cache*0.1 + output*4
+                        let effTurn = uncached + cache * 0.1 + out * 4.0
                         if ts >= fiveHoursAgo {
-                            fiveHUsed += totalTurn
+                            fiveHUsed += effTurn
                             fiveHTurns += 1
                         }
                         if ts >= sevenDaysAgo {
-                            weekUsed += totalTurn
+                            weekUsed += effTurn
                             weekTurns += 1
                         }
                         convTurns.append(TurnPoint(input: totalIn, cacheRead: cache, output: out, timestamp: ts))
@@ -623,10 +624,10 @@ final class HUDRootView: NSView {
         var next = currentSettings
         next.planName = "Google AI Pro"
         next.contextLimit = 1_000_000
-        next.fiveHourTokenBudget = 15_000_000
-        next.weeklyTokenBudget = 50_000_000
-        fiveHInput.stringValue = "15000000"
-        weekInput.stringValue = "50000000"
+        next.fiveHourTokenBudget = 8_000_000
+        next.weeklyTokenBudget = 30_000_000
+        fiveHInput.stringValue = "8000000"
+        weekInput.stringValue = "30000000"
         onSaveSettings?(next)
     }
 
@@ -634,10 +635,10 @@ final class HUDRootView: NSView {
         var next = currentSettings
         next.planName = "Google AI Ultra"
         next.contextLimit = 1_000_000
-        next.fiveHourTokenBudget = 60_000_000
-        next.weeklyTokenBudget = 200_000_000
-        fiveHInput.stringValue = "60000000"
-        weekInput.stringValue = "200000000"
+        next.fiveHourTokenBudget = 32_000_000
+        next.weeklyTokenBudget = 120_000_000
+        fiveHInput.stringValue = "32000000"
+        weekInput.stringValue = "120000000"
         onSaveSettings?(next)
     }
 

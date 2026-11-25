@@ -25,12 +25,16 @@ const DEFAULT_SETTINGS = {
   planName: "Google AI Pro",
   googleAccount: "",
   contextLimit: 0, // 0 = auto-detect by model (Gemini 1M, Claude/GPT 200K)
-  fiveHourTokenBudget: 15000000,
-  weeklyTokenBudget: 50000000,
+  fiveHourTokenBudget: 8000000, // weighted effective tokens (uncached*1 + cache*0.1 + output*4)
+  weeklyTokenBudget: 30000000,
   inputPricePerM: 1.25,
   cachePricePerM: 0.31,
   outputPricePerM: 5.0,
 };
+
+function weightedTokens(uncachedInput, cacheRead, output) {
+  return Math.round(uncachedInput + cacheRead * 0.1 + output * 4);
+}
 
 function inferModelContextLimit(model, overrideLimit) {
   if (overrideLimit && overrideLimit >= 10000) return overrideLimit;
@@ -288,14 +292,15 @@ function collectMetrics(selectedConvId) {
     for (const t of conv.allTurns) {
       const ts = t.at ? Date.parse(t.at) : conv.mtimeMs;
       if (Number.isFinite(ts)) {
-        const turnTotal = t.input + t.output;
+        const uncached = Math.max(0, t.input - t.cacheRead);
+        const effTurn = weightedTokens(uncached, t.cacheRead, t.output);
         if (ts >= fiveHoursAgoMs) {
-          fiveHourTotal += turnTotal;
+          fiveHourTotal += effTurn;
           fiveHourOutput += t.output;
           fiveHourTurns += 1;
         }
         if (ts >= sevenDaysAgoMs) {
-          weeklyTotal += turnTotal;
+          weeklyTotal += effTurn;
           weeklyOutput += t.output;
           weeklyTurns += 1;
         }
