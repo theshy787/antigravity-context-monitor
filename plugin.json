@@ -1,0 +1,11 @@
+{
+  "name": "context-token-monitor",
+  "displayName": "Token & Context Monitor",
+  "version": "1.0.0",
+  "description": "Real-time Antigravity context window, token consumption, prompt cache hit rate, and estimated API cost dashboard powered by an official MCP App.",
+  "suggestedPrompts": [
+    "打开 Token 与上下文监控看板",
+    "查看当前对话的上下文占用与缓存命中率",
+    "统计最近 14 天的 Token 消耗与预估费用"
+  ]
+}
